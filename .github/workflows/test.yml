@@ -1,15 +1,35 @@
 name: Test
+
 on:
   push:
     branches:
       - main
+
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
         with:
-          node-version: 20
-      - run: npm install
-      - run: npm test
+          fetch-depth: 2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Get commit hashes
+        id: commits
+        run: |
+          echo "commit1=$(git rev-parse origin/${{ github.base_ref }})" >> $GITHUB_ENV
+          echo "commit2=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
+      - name: Calculate Patch Coverage
+        run: |
+          npm run build
+          node dist/index.js ${{ env.commit1 }} ${{ env.commit2 }} ./path/to/lcov.info

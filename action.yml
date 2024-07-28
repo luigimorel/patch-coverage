@@ -5,9 +5,6 @@ runs:
   using: node20
   main: dist/main.js
 inputs:
-  token:
-    description: GitHub token
-    required: true
   commits:
     description: Commits to generate the report for
     required: true
