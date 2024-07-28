@@ -85,6 +85,7 @@ async function main() {
 
     console.log(`Patch coverage: ${(patchCoverage * 100).toFixed(2)}%`);
   } catch (error) {
+    console.log(commit1, commit2, lcovFilePath);
     console.error("Error calculating patch coverage:", error);
     process.exit(1);
   }
