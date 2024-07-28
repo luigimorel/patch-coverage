@@ -1,0 +1,19 @@
+{
+  "name": "@luigimorel/patch-coverage",
+  "version": "0.0.1",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "Luigi Morel <hi@luigimorel.com>",
+  "repository": {
+    "url": ""
+  },
+  "license": "MIT",
+  "description": "A github action for comparing commits",
+  "dependencies": {
+    "typescript": "^5.5.4"
+  }
+}

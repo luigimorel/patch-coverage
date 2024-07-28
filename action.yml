@@ -1,0 +1,19 @@
+name: luigimorel/patch-coverage
+description: A GitHub Action to generate a lcov report for given commits
+author: luigimorel
+runs:
+  using: node20
+  main: dist/main.js
+inputs:
+  token:
+    description: GitHub token
+    required: true
+  commits:
+    description: Commits to generate the report for
+    required: true
+  lcov-file:
+    description: Path to the lcov.info file
+    required: true
+  base-ref:
+    description: Base ref to compare against
+    required: true
