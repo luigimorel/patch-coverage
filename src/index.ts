@@ -1,4 +1,5 @@
-import lcov from "lcov-parse";
+import * as fs from "fs";
+import * as readline from "readline";
 import simpleGit, { SimpleGit } from "simple-git";
 
 const git: SimpleGit = simpleGit();
@@ -12,15 +13,21 @@ interface Coverage {
   };
 }
 
-function parseLcov(filePath: string): Promise<Coverage[]> {
-  return new Promise((resolve, reject) => {
-    lcov(filePath, (err: string | null, data: Coverage[] | undefined) => {
-      if (err) {
-        return reject(err);
-      }
-      resolve(data || []);
-    });
+async function parseCoverage(filePath: string): Promise<Coverage[]> {
+  const coverageData: Coverage[] = [];
+  const fileStream = fs.createReadStream(filePath);
+  const rl = readline.createInterface({
+    input: fileStream,
+    crlfDelay: Infinity,
   });
+
+  for await (const line of rl) {
+    // Process each line and parse the coverage data as needed
+    const coverage: Coverage = JSON.parse(line); // Assuming line is a JSON string
+    coverageData.push(coverage);
+  }
+
+  return coverageData;
 }
 
 async function getDiff(commit1: string, commit2: string): Promise<string> {
@@ -76,16 +83,15 @@ function calculatePatchCoverage(diff: string, coverage: Coverage[]): number {
 async function main() {
   const commit1 = process.argv[2];
   const commit2 = process.argv[3];
-  const lcovFilePath = process.argv[4];
+  const coverageFilePath = process.argv[4];
 
   try {
-    const coverage = await parseLcov(lcovFilePath);
+    const coverage = await parseCoverage(coverageFilePath);
     const diff = await getDiff(commit1, commit2);
     const patchCoverage = calculatePatchCoverage(diff, coverage);
 
     console.log(`Patch coverage: ${(patchCoverage * 100).toFixed(2)}%`);
   } catch (error) {
-    console.log(commit1, commit2, lcovFilePath);
     console.error("Error calculating patch coverage:", error);
     process.exit(1);
   }
